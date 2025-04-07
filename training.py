@@ -5,6 +5,7 @@ from model import NeuralNetwork
 import os
 import torch
 import torch.nn as nn
+from tqdm import tqdm
 
 data_dir = "dataset"
 train_dir = os.path.join(data_dir, "train")
@@ -46,7 +47,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
     
     train_loss, accuracy = 0, 0
     
-    for batch_number, (X, y) in enumerate(dataloader):
+    for batch_number, (X, y) in enumerate(tqdm(dataloader, desc="Entrenando", leave=False)):
         X, y = X.to(device), y.to(device)
         
         logits = model(X)
@@ -61,7 +62,8 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         
         if batch_number % 10 == 0:
             data_number = batch_number * BATCH_SIZE
-            print("Loss: " + str(loss.item()) + " [" + str(data_number) + "/" + str(train_size) + "]")
+            tqdm.write(f"📉 Loss: {loss.item():.4f} [{data_number}/{train_size}]")
+            #print(" Loss: " + str(loss.item()) + " [" + str(data_number) + "/" + str(train_size) + "]")
             
     train_loss /= batch_quantity
     accuracy /= train_size
@@ -77,7 +79,7 @@ def validation_loop(dataloader, model, loss_fn):
     validation_loss, accuracy = 0, 0
     
     with torch.no_grad():
-        for X, y in dataloader:
+        for X, y in tqdm(dataloader, desc="Validando", leave=False):
             X, y = X.to(device), y.to(device)
             
             logits = model(X)
@@ -88,10 +90,11 @@ def validation_loop(dataloader, model, loss_fn):
     validation_loss /= batch_quantity
     accuracy /= val_size
     
-    print("Validacion: Perdida promedio: " + str(validation_loss) + ". Exactitud: " + str(100*accuracy) + "%")
+    print(f"Validación: Pérdida promedio: {validation_loss:.2f}. Exactitud: {accuracy*100:.2f}%")
+    return validation_loss, accuracy
         
 for i in range(EPOCHS):
-    print("Iteracion: ", str(i+1))
+    print(f"\n🌸 Época {i+1}/{EPOCHS}")
     train_loop(train_loader, model, loss_fn, optimizer)
     validation_loop(test_loader, model, loss_fn)
     
