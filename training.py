@@ -68,8 +68,31 @@ def train_loop(dataloader, model, loss_fn, optimizer):
     
     print("Training: Average loss: " + str(train_loss) + ". Accuracy: " + str(100*accuracy) + "%")
         
+def validation_loop(dataloader, model, loss_fn):
+    val_size = len(dataloader.dataset)
+    batch_quantity = len(dataloader)
+    
+    model.eval()
+    
+    validation_loss, accuracy = 0, 0
+    
+    with torch.no_grad():
+        for X, y in dataloader:
+            X, y = X.to(device), y.to(device)
+            
+            logits = model(X)
+            
+            validation_loss += loss_fn(logits, y).item()
+            accuracy += (logits.argmax(1) == y).type(torch.float).sum().item()
+    
+    validation_loss /= batch_quantity
+    accuracy /= val_size
+    
+    print("Validacion: Perdida promedio: " + str(validation_loss) + ". Exactitud: " + str(100*accuracy) + "%")
+        
 for i in range(EPOCHS):
     print("Iteracion: ", str(i+1))
     train_loop(train_loader, model, loss_fn, optimizer)
+    validation_loop(test_loader, model, loss_fn)
     
 print("Entrenamiento terminado!")
