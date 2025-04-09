@@ -1,22 +1,21 @@
 import cv2
-from imutils import resize
 import torch
 from torchvision import transforms
 from model import NeuralNetwork
 
 # clasificador preentrenado para detección de rostros
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
 model = NeuralNetwork()
 model.load_state_dict(torch.load('model.pth', weights_only=True))
-#model = torch.load('model.pth')
 model.eval()
-# 3. Definir transformaciones (igual que en tu dataset de entrenamiento)
+
+# Definir transformaciones (igual que en el dataset de entrenamiento)
 transform = transforms.Compose([
-    transforms.ToPILImage(),
+    transforms.ToPILImage(), # la imagen viene de OpenCV como array NumPy, y hay que convertirla antes de pasarla a Grayscale o Resize
     transforms.Grayscale(num_output_channels=1),
     transforms.Resize((48, 48)),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
+    transforms.ToTensor()
 ])
 
 cap = cv2.VideoCapture(0)
@@ -34,11 +33,14 @@ while cap.isOpened():
     # rectángulo alrededor de cada cara detectada
     for (x, y, w, h) in faces:
         cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        
         # Recortar la cara
         face = im[y:y+h, x:x+w]
+        
         # Aplicar transformaciones
-        face_tensor = transform(face).unsqueeze(0)  # shape: [1, 1, 48, 48]
+        face_tensor = transform(face).unsqueeze(0) 
         clases = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
+        
         # Predecir emoción:
         with torch.no_grad():
             output = model(face_tensor)
