@@ -41,16 +41,11 @@ class NeuralNetwork(nn.Module):
 		self.dropout = nn.Dropout(0.5)
 		"""Dropout apaga el 50% de las neuronas aleatoriamente durante cada paso de entrenamiento.
 		Sirve para que la red no dependa tanto de neuronas específicas, ayudando a evitar el sobreentrenamiento.
-		0.5 es un valor común, pero también podés probar con 0.3 o 0.25."""
+		0.5 es un valor común, pero también se puede probar con 0.3 o 0.25."""
 		self.flatten = nn.Flatten()
 
 		# Capa totalmente conectada 1
-		self.fc1 = nn.Linear(64 * 3 * 3, 512)  # Ajusta la cantidad de nodos según las dimensiones
-		# Capa totalmente conectada 2
-		self.fc2 = nn.Linear(512, 256)  # Nueva capa
-		# Capa de salida
-		self.fc3 = nn.Linear(256, 7)
-
+		self.fc1 = nn.Linear(64 * 3 * 3, 512)
 		"""
 		¿Por qué 64 * 3 * 3? 
 		Imagen original: 48x48 (en FER2013).
@@ -63,6 +58,10 @@ class NeuralNetwork(nn.Module):
 		Y suficientemente grande como para que la red tenga capacidad de aprender cosas útiles.
 		512 es un número bastante estándar y balanceado, ni muy chico (que se quede corta la red), ni muy grande (que se sobreentrene o pese mucho).
 		"""
+        # Capa totalmente conectada 2
+		self.fc2 = nn.Linear(512, 256)
+		# Capa de salida
+		self.fc3 = nn.Linear(256, 7)
         
 	def forward(self, x):
 		x = self.conv1(x)
@@ -80,7 +79,7 @@ class NeuralNetwork(nn.Module):
 		x = self.relu3(x)
 		x = self.pool3(x)
 		
-		x = self.conv4(x)  # Nueva capa convolucional
+		x = self.conv4(x)
 		x = self.bn4(x)
 		x = self.relu4(x)
 		x = self.pool4(x)
@@ -89,7 +88,7 @@ class NeuralNetwork(nn.Module):
 		x = self.flatten(x)
 		
 		x = self.fc1(x)
-		x = self.fc2(x)  # Nueva capa completamente conectada
+		x = self.fc2(x)
 		x = self.fc3(x)
 
 		return x

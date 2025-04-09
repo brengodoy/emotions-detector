@@ -1,6 +1,6 @@
 from torchvision.datasets import ImageFolder
 from torchvision import transforms
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from model import NeuralNetwork
 import os
 import torch
@@ -13,11 +13,11 @@ test_dir = os.path.join(data_dir, "test")
 
 # Transformaciones para las imágenes
 transform = transforms.Compose([
-    transforms.Grayscale(),       # Convierte la imagen a escala de grises (1 canal, como vos querés)
+    transforms.Grayscale(),       # Convierte la imagen a escala de grises
     transforms.Resize((48, 48)),  # Cambia el tamaño a 48x48 píxeles (que es lo que usa FER2013)
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
-    transforms.ToTensor()         # Convierte la imagen en un tensor, o sea en una estructura que PyTorch puede usar
+    transforms.ToTensor()
 ])
 
 # Cargar datasets
