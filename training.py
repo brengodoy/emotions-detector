@@ -95,5 +95,5 @@ for i in range(EPOCHS):
     train_loop(train_loader, model, loss_fn, optimizer)
     validation_loop(test_loader, model, loss_fn)
     
-torch.save(model.state_dict(), 'model.pth')
+torch.save(model.state_dict(), 'model_emotions.pth')
 print("Entrenamiento terminado!")

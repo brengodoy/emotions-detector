@@ -7,7 +7,7 @@ from model import NeuralNetwork
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 model = NeuralNetwork()
-model.load_state_dict(torch.load('model.pth', weights_only=True))
+model.load_state_dict(torch.load('model_emotions.pth', weights_only=True))
 model.eval()
 
 # Definir transformaciones (igual que en el dataset de entrenamiento)
